@@ -7,18 +7,12 @@
 
 This project is to demonstrate how to perform ETL processes on a dataset and creating a CLI tool enable users to interact with the extranal databse and perfomr complex queries on it.
 
-## Project Function
-- A `main.py` script which serves as the CLI structure and logic.
-- A `test_main.py` script to unit test the different functionalities.
-- A `mylib/extract.py` script to extract a csv file from github.
-- A `mylib/transform_load.py` script to remove all unwanted columns and then load it to a sqlite database
-- A `mylib/query.py` script to perform CRUD queries on the dataset along with the option to execute custom queries.
-  
-# Databricks AAPL Table Operations
+
+## Databricks Table Operations
 
 This document provides detailed explanations of each function in the Databricks AAPL Table Operations script. The script performs basic CRUD (Create, Read, Update, Delete) operations on the AAPL table using the Databricks SQL API.
 
-## Functions Overview
+### Functions Overview
 
 ### 1. `create(entry)`
 
