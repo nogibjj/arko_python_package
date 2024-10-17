@@ -140,7 +140,6 @@ LIMIT 10;
 
 These functions provide a straightforward interface for interacting with the AAPL table in Databricks, allowing users to perform essential data operations efficiently.
 
-![image](https://github.com/user-attachments/assets/fc27b7c0-e55d-45d5-9cd0-b92fcad6eb6e)
 
 
 
@@ -159,8 +158,8 @@ These functions provide a straightforward interface for interacting with the AAP
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/nogibjj/arko-sqlite-lab
-cd arko-sqlite-lab
+git clone https://github.com/nogibjj/arko_complex_query
+cd arko_complex_query
 ```
 
 ### 2. Run CLI tool
@@ -168,5 +167,7 @@ cd arko-sqlite-lab
 ```bash
 .venv/bin/python main.py
 ```
+![image](https://github.com/user-attachments/assets/be1ebd17-1ac4-4aeb-a9b3-56dbfa341d99)
+
 ![image](https://github.com/user-attachments/assets/5bc43730-4143-43e3-b952-6d6bb4e63047)
 
