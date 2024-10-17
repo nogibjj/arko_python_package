@@ -3,9 +3,8 @@ import csv
 import os
 from dotenv import load_dotenv
 
-def load(dataset="data/AAPL.csv"):
-    # print(f"Current working directory: {os.getcwd()}")
 
+def load(dataset="data/AAPL.csv"):
     load_dotenv()
     databricks_key = os.getenv("DATABRICKS_KEY")
     server_host_name = os.getenv("SERVER_HOST_NAME")
@@ -13,14 +12,9 @@ def load(dataset="data/AAPL.csv"):
 
     with open(dataset, newline="") as csvfile:
         payload = list(csv.reader(csvfile, delimiter=","))
-        
+
         header = payload[0]
-        formatted_header = ['Close' if col == 'Close(t)' else col for col in header[:6]]
-
-        # print(f"Formatted Header: {formatted_header}")
-
-        last_100_rows = payload[-101:]
-        # print(f"Last 100 Rows: {last_100_rows}")
+        formatted_header = ["Close" if col == "Close(t)" else col for col in header[:6]]
 
         with sql.connect(
             access_token=databricks_key,
@@ -28,7 +22,7 @@ def load(dataset="data/AAPL.csv"):
             http_path=sql_http,
         ) as connection:
             with connection.cursor() as cursor:
-                
+
                 cursor.execute("SHOW TABLES FROM default LIKE 'AAPL*'")
                 result = cursor.fetchall()
                 if result:
@@ -42,19 +36,31 @@ def load(dataset="data/AAPL.csv"):
                 """
                 cursor.execute(create_table_query)
 
-                insert_query = f"INSERT INTO AAPL ({', '.join(formatted_header)}) VALUES ("
+                # Prepare insert statement
+                insert_query = (
+                    f"INSERT INTO AAPL ({', '.join(formatted_header)}) VALUES "
+                )
+                values = []
 
-                for i, row in enumerate(last_100_rows[1:]):
-
-                    print(f"Inserting Row: {i+1}")
+                for i, row in enumerate(payload[1:]):
                     if len(row) < 6:
-                        print(f"Skipping row due to insufficient data: {row}")
+                        print(f"Skipping row due to insufficient data: {row, i}")
                         continue
 
-                    formatted_values = ", ".join([f"'{value}'" if isinstance(value, str) else str(value) for value in row[:6]])
-                    cursor.execute(insert_query + formatted_values + ")")
+                    formatted_values = ", ".join(
+                        [
+                            f"'{value}'" if isinstance(value, str) else str(value)
+                            for value in row[:6]
+                        ]
+                    )
+                    values.append(f"({formatted_values})")
 
+                # Execute all at once
+                if values:
+                    full_insert_query = insert_query + ", ".join(values)
+                    cursor.execute(full_insert_query)
 
-        print("Last 100 rows from the CSV file have been successfully loaded into Databricks")
+        print(
+            "Last 100 rows from the CSV file have been successfully loaded into Databricks"
+        )
         return "Databricks SQL database updated"
-
