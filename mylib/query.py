@@ -1,5 +1,14 @@
-import sqlite3
+from databricks import sql
 from tabulate import tabulate
+from dotenv import load_dotenv
+import os
+
+
+# Load environment variables
+load_dotenv()
+databricks_key = os.getenv("DATABRICKS_KEY")
+server_host_name = os.getenv("SERVER_HOST_NAME")
+sql_http = os.getenv("SQL_HTTP")
 
 
 def create(entry):
@@ -9,68 +18,91 @@ def create(entry):
     Parameters:
     - entry: A tuple containing the values to insert into the table
     """
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO AAPL VALUES (?, ?, ?, ?, ?, ?)", entry)
-    conn.commit()
-    conn.close()
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO AAPL VALUES (?, ?, ?, ?, ?, ?)", entry)
     return "Entry added successfully!"
 
+
 def read():
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM AAPL LIMIT 5")
+    """
+    Read the first 5 rows from the AAPL table.
+    """
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM AAPL LIMIT 5")
 
-    # Fetch all rows and get the column names
-    results = cursor.fetchall()
-    headers = [description[0] for description in cursor.description]
+            # Fetch all rows and get the column names
+            results = cursor.fetchall()
+            headers = [description[0] for description in cursor.description]
 
-    # Display results as a table
-    print("Query Results:")
-    print(tabulate(results, headers, tablefmt="pretty"))
-
-    conn.close()
+            # Display results as a table
+            print("Query Results:")
+            print(tabulate(results, headers, tablefmt="pretty"))
     return "Success"
 
+
 def custom_query(
-    query="""WITH RecentData AS (
-  SELECT
-    "Close(t)" AS ClosePrice,
-    DATE,
-    LAG("Close(t)", 1) OVER (ORDER BY DATE DESC) AS PrevClosePrice
-  FROM AAPL
-  ORDER BY DATE DESC
-  LIMIT 6  -- Get 6 rows to account for 5 changes
+    query="""WITH PriceData AS (
+    SELECT 
+        CAST(Date AS DATE) AS Date,  
+        CAST(Open AS FLOAT) AS Open,      
+        CAST(High AS FLOAT) AS High,      
+        CAST(Low AS FLOAT) AS Low,        
+        CAST(Close AS FLOAT) AS Close,    
+        CAST(Volume AS BIGINT) AS Volume, 
+        (CAST(High AS FLOAT) - CAST(Low AS FLOAT)) AS price_range,  
+        SUM(CAST(Volume AS BIGINT)) OVER() AS total_volume,  
+        AVG(Close) OVER (ORDER BY Date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_avg_close
+    FROM 
+        aapl
 )
-SELECT
-  DATE,
-  ClosePrice,
-  PrevClosePrice,
-  ROUND(((ClosePrice - PrevClosePrice) / PrevClosePrice) * 100, 2) AS PercentChange
-FROM RecentData
-WHERE PrevClosePrice IS NOT NULL
-ORDER BY DATE DESC;
+SELECT 
+    Date, 
+    Open, 
+    High, 
+    Low, 
+    Close, 
+    Volume, 
+    price_range, 
+    moving_avg_close, 
+    total_volume
+FROM 
+    PriceData
+ORDER BY 
+    Date ASC
+LIMIT 10;
 """,
 ):
     """
-    Read the AAPL table
+    Run a custom query on the AAPL table.
 
-    Parameters: (optional)
-    - entry: A string query for custom querying the table
+    Parameters:
+    - query: A string query for custom querying the table.
     """
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute(query)
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
 
-    # Fetch all rows and get the column names
-    results = cursor.fetchall()
-    headers = [description[0] for description in cursor.description]
+            # Fetch all rows and get the column names
+            results = cursor.fetchall()
+            headers = [description[0] for description in cursor.description]
 
-    # Display results as a table
-    print("Query Results:")
-    print(tabulate(results, headers, tablefmt="pretty"))
-
-    conn.close()
+            # Display results as a table
+            print("Query Results:")
+            print(tabulate(results, headers, tablefmt="pretty"))
     return "Success"
 
 
@@ -84,14 +116,16 @@ def update(column, new_value, condition_column, condition_value):
     - condition_column: The column to check in the WHERE condition.
     - condition_value: The value in the condition_column to match for updating.
     """
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute(
-        f"UPDATE AAPL SET {column} = ? WHERE {condition_column} = ?",
-        (new_value, condition_value),
-    )
-    conn.commit()
-    conn.close()
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"UPDATE AAPL SET {column} = ? WHERE {condition_column} = ?",
+                (new_value, condition_value),
+            )
     return "Entry updated successfully!"
 
 
@@ -103,9 +137,13 @@ def delete(condition_column, condition_value):
     - condition_column: The column to check in the WHERE condition.
     - condition_value: The value in the condition_column to match for deletion.
     """
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute(f"DELETE FROM AAPL WHERE {condition_column} = ?", (condition_value,))
-    conn.commit()
-    conn.close()
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"DELETE FROM AAPL WHERE {condition_column} = ?", (condition_value,)
+            )
     return "Entry deleted successfully!"

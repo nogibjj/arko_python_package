@@ -1,46 +1,64 @@
-import sqlite3
+from databricks import sql
 from mylib.query import create, read, update, delete
+from dotenv import load_dotenv
+import os
 
 
-# Helper function to reset the database
+load_dotenv()
+databricks_key = os.getenv("DATABRICKS_KEY")
+server_host_name = os.getenv("SERVER_HOST_NAME")
+sql_http = os.getenv("SQL_HTTP")
+
+
 def reset_database():
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute("DROP TABLE IF EXISTS AAPL")
-    cursor.execute(
-        """
-        CREATE TABLE AAPL (
-            DATE TEXT,
-            OPEN REAL,
-            HIGH REAL,
-            LOW REAL,
-            "Close(t)" REAL,
-            VOLUME INTEGER
-        )
-    """
-    )
-    conn.commit()
-    conn.close()
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("DROP TABLE IF EXISTS AAPL")
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS AAPL (
+                    DATE DATE,
+                    OPEN FLOAT,
+                    HIGH FLOAT,
+                    LOW FLOAT,
+                    Close FLOAT,
+                    VOLUME BIGINT
+                )
+                """
+            )
 
 
-# Test creating an entry
 def test_create_entry():
     reset_database()
     entry = ("2024-10-06", 100.0, 110.0, 95.0, 105.0, 100000)
     result = create(entry)
     assert result == "Entry added successfully!"
 
-    # Check if the entry exists
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM AAPL WHERE DATE = '2024-10-06'")
-    data = cursor.fetchone()
-    conn.close()
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM AAPL WHERE DATE = '2024-10-06'")
+            data = cursor.fetchone()
 
-    assert data == entry, f"Expected {entry}, but got {data}"
+    converted_data = (
+        str(data.DATE),
+        data.OPEN,
+        data.HIGH,
+        data.LOW,
+        data.Close,
+        data.VOLUME,
+    )
+
+    assert converted_data == entry, f"Expected {entry}, but got {converted_data}"
 
 
-# Test reading entries
 def test_read_entries():
     reset_database()
     entry = ("2024-10-06", 100.0, 110.0, 95.0, 105.0, 100000)
@@ -48,50 +66,49 @@ def test_read_entries():
 
     result = read()
     print("result", result)
-    assert result == "Success"  # Check if the default query result output is present
+    assert result == "Success"
 
 
-# Test updating an entry
 def test_update_entry():
     reset_database()
     entry = ("2024-10-06", 100.0, 110.0, 95.0, 105.0, 100000)
     create(entry)
 
-    # Update the entry
     result = update("OPEN", 120.0, "DATE", "2024-10-06")
     assert result == "Entry updated successfully!"
 
-    # Check if the update was successful
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT OPEN FROM AAPL WHERE DATE = '2024-10-06'")
-    data = cursor.fetchone()
-    conn.close()
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT OPEN FROM AAPL WHERE DATE = '2024-10-06'")
+            data = cursor.fetchone()
 
     assert data[0] == 120.0, f"Expected OPEN = 120.0, but got {data[0]}"
 
 
-# Test deleting an entry
 def test_delete_entry():
     reset_database()
     entry = ("2024-10-06", 100.0, 110.0, 95.0, 105.0, 100000)
     create(entry)
 
-    # Delete the entry
     result = delete("DATE", "2024-10-06")
     assert result == "Entry deleted successfully!"
 
-    # Check if the entry was deleted
-    conn = sqlite3.connect("AAPL.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM AAPL WHERE DATE = '2024-10-06'")
-    data = cursor.fetchone()
-    conn.close()
+    with sql.connect(
+        access_token=databricks_key,
+        server_hostname=server_host_name,
+        http_path=sql_http,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM AAPL WHERE DATE = '2024-10-06'")
+            data = cursor.fetchone()
 
     assert data is None, f"Expected None, but got {data}"
 
 
-# Run all tests
 if __name__ == "__main__":
     test_create_entry()
     test_read_entries()

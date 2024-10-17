@@ -1,12 +1,17 @@
 import requests
+import csv
 
+def extract():
+    url = 'https://raw.githubusercontent.com/MainakRepositor/Datasets/refs/heads/master/Stocks/AAPL.csv'
 
-def extract(
-    url="https://raw.githubusercontent.com/MainakRepositor/Datasets/refs/heads/master/Stocks/AAPL.csv",
-    file_path="data/AAPL.csv",
-):
-    """ "Extract a url to a file path"""
-    with requests.get(url) as r:
-        with open(file_path, "wb") as f:
-            f.write(r.content)
-    return file_path
+    response = requests.get(url)
+    response.raise_for_status()
+    csv_file = 'data/AAPL.csv'
+
+    with open(csv_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        for line in response.iter_lines():
+            decoded_line = line.decode('utf-8')
+            writer.writerow(decoded_line.split(','))
+
+    print(f'Data saved to {csv_file}')

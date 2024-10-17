@@ -2,7 +2,8 @@
 summarizeApp
 #ignore fine-tuning
 test_trainer/
-
+#ignore env file
+.env
 #ignore pytorch artifacts
 data
 model.pth

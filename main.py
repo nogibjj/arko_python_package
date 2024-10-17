@@ -6,11 +6,8 @@ from mylib.query import create, read, custom_query, update, delete
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("cli_queries.log"),
-        logging.StreamHandler()
-    ]
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("cli_queries.log"), logging.StreamHandler()],
 )
 
 
@@ -70,9 +67,13 @@ def query_menu():
         query_choice = input("Enter your choice (1-6): ")
 
         if query_choice == "1":
-            entry = input("Enter the 6 values for the entry (comma-separated): ").split(",")
+            entry = input("Enter the 6 values for the entry (comma-separated): ").split(
+                ","
+            )
             if len(entry) == 6:
-                entry = tuple(map(str.strip, entry))  # Strip whitespace and convert to tuple
+                entry = tuple(
+                    map(str.strip, entry)
+                )  # Strip whitespace and convert to tuple
                 logging.info(f"Inserting entry: {entry}")
                 print(f"Inserting entry: {entry}")
                 print(create(entry))
@@ -89,23 +90,37 @@ def query_menu():
         elif query_choice == "3":
             column = input("Enter the column to update: ").strip()
             new_value = input(f"Enter the new value for {column}: ").strip()
-            condition_column = input("Enter the condition column for WHERE clause: ").strip()
-            condition_value = input(f"Enter the condition value for {condition_column}: ").strip()
-            logging.info(f"Updating {column} to {new_value} where {condition_column} = {condition_value}")
-            print(f"Updating {column} to {new_value} where {condition_column} = {condition_value}")
+            condition_column = input(
+                "Enter the condition column for WHERE clause: "
+            ).strip()
+            condition_value = input(
+                f"Enter the condition value for {condition_column}: "
+            ).strip()
+            logging.info(
+                f"Updating {column} to {new_value} where {condition_column} = {condition_value}"
+            )
+            print(
+                f"Updating {column} to {new_value} where {condition_column} = {condition_value}"
+            )
             print(update(column, new_value, condition_column, condition_value))
             logging.info("Entry updated successfully.")
 
         elif query_choice == "4":
-            condition_column = input("Enter the condition column for WHERE clause: ").strip()
-            condition_value = input(f"Enter the condition value for {condition_column}: ").strip()
+            condition_column = input(
+                "Enter the condition column for WHERE clause: "
+            ).strip()
+            condition_value = input(
+                f"Enter the condition value for {condition_column}: "
+            ).strip()
             logging.info(f"Deleting entry where {condition_column} = {condition_value}")
             print(f"Deleting entry where {condition_column} = {condition_value}")
             print(delete(condition_column, condition_value))
             logging.info("Entry deleted successfully.")
 
         elif query_choice == "5":
-            query = input("Enter a custom SQL query or press Enter to run the default query: ").strip()
+            query = input(
+                "Enter a custom SQL query or press Enter to run the default query: "
+            ).strip()
             if query:
                 logging.info(f"Executing custom query: {query}")
                 print(f"Executing custom query: {query}")
@@ -114,7 +129,7 @@ def query_menu():
             else:
                 logging.info("Reading data using default query.")
                 print("Reading data using default query...")
-                print(read())
+                print(custom_query())
 
         elif query_choice == "6":
             logging.info("Going back to main menu.")
