@@ -1,7 +1,8 @@
+import os
 import logging
-from mylib.extract import extract
-from mylib.transform_load import load
-from mylib.query import create, read, custom_query, update, delete
+from mypackage.extract import extract
+from mypackage.transform_load import load
+from mypackage.query import create, read, custom_query, update, delete
 
 # Configure logging
 logging.basicConfig(
@@ -9,7 +10,10 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[logging.FileHandler("cli_queries.log"), logging.StreamHandler()],
 )
-
+data_folder = 'data'
+if not os.path.exists(data_folder):
+    os.makedirs(data_folder)
+    logging.info(f"Created '{data_folder}' folder as it didn't exist.")
 
 def interactive_menu():
     while True:

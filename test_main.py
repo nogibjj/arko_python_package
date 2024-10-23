@@ -1,5 +1,5 @@
 from databricks import sql
-from mylib.query import create, read, update, delete
+from mypackage.query import create, read, update, delete
 from dotenv import load_dotenv
 import os
 
