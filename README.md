@@ -147,7 +147,8 @@ These functions provide a straightforward interface for interacting with the AAP
 - `Makefile`: Defines common tasks like installing dependencies, running tests, linting, and running docker.
 - `.devcontainer/`: Contains `Dockerfile` and VS Code configuration.
 - `.github/workflows/`: Contians CI/CD workflows for GitHub.
-![image](https://github.com/user-attachments/assets/86b856c0-d55a-486e-8811-984f8011456e)
+![image](https://github.com/user-attachments/assets/1e62e416-9536-4c2d-bac7-8d38a317d6f7)
+
 
 ## Project Setup
 ### 1. Clone the Repository
