@@ -1,29 +1,32 @@
-install:
-	pip install --upgrade pip &&\
+
+install: 
+	python -m venv testenv && \
+		. testenv/bin/activate && \
+		pip install --upgrade pip && \
 		pip install -r requirements.txt
 
-test:
-	python -m pytest -vv --cov=main --cov=mypackage test_*.py
+test: 
+	. testenv/bin/activate && \
+		python -m pytest -vv --cov=main --cov=mypackage test_*.py
 
 format:	
-	black *.py 
+	. testenv/bin/activate && \
+		black *.py 
 
-lint:
-	ruff check *.py mypackage/*.py
+lint: 
+	. testenv/bin/activate && \
+		ruff check *.py mypackage/*.py
 
-container-lint:
+container-lint: 
 	docker run --rm -i hadolint/hadolint < .devcontainer/Dockerfile
 
 refactor: format lint
 
 deploy:
+	.d testenv/bin/activate && \
+		docker build -f .devcontainer/Dockerfile -t arko_cli_tool:latest . && \
+		docker rm -f arko_cli_tool || true && \
+		docker run -d --name arko_cli_tool -p 80:80 arko_cli_tool:latest
+		echo "Deployment completed."
 
-	docker build -f .devcontainer/Dockerfile -t arko_cli_tool:latest .
-
-	docker rm -f arko_cli_tool
-
-	docker run -d --name arko_cli_tool -p 80:80 arko_cli_tool:latest
-
-	echo "Deployment completed."
-		
-all: install lint test format deploy
+all: install format lint test

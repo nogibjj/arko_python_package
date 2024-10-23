@@ -3,9 +3,9 @@
 [![Lint](https://github.com/nogibjj/arko_complex_query/actions/workflows/lint.yml/badge.svg)](https://github.com/nogibjj/arko_complex_query/actions/workflows/lint.yml)
 [![Test](https://github.com/nogibjj/arko_complex_query/actions/workflows/test.yml/badge.svg)](https://github.com/nogibjj/arko_complex_query/actions/workflows/test.yml)
 
-# CLI Tool to interact with DataBricks table 
+# Packaged CLI Tool to interact with DataBricks table 
 
-This project is to demonstrate how to perform ETL processes on a dataset and creating a CLI tool enable users to interact with the extranal databse and perfomr complex queries on it.
+This project is to demonstrate how to perform ETL processes on a dataset and creating a packaged CLI tool enable users to interact with the extranal databse and perfomr complex queries on it.
 
 
 ## Databricks Table Operations
@@ -144,8 +144,8 @@ These functions provide a straightforward interface for interacting with the AAP
 
 
 ## Project Structure
-
-- `mylib/`: Contains the ETL scripts.
+- `setup.py`:  Configuration script for setuptools that defines the package metadata, dependencies, and entry points necessary for packaging and distributing the ETL tool as a Python package.
+- `mypackage/`: Contains the ETL scripts (packaged)
 - `requirements.txt`: Lists the Python dependencies.
 - `Makefile`: Defines common tasks like installing dependencies, running tests, linting, and running docker.
 - `.devcontainer/`: Contains `Dockerfile` and VS Code configuration.
@@ -158,16 +158,17 @@ These functions provide a straightforward interface for interacting with the AAP
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/nogibjj/arko_complex_query
-cd arko_complex_query
+git clone https://github.com/nogibjj/arko_python_package
+cd arko_python_package
 ```
 
 ### 2. Run CLI tool
 
 ```bash
-.venv/bin/python main.py
+make install
+etl_cli
 ```
-![image](https://github.com/user-attachments/assets/be1ebd17-1ac4-4aeb-a9b3-56dbfa341d99)
-
+![image](https://github.com/user-attachments/assets/7e8c259c-ab48-44c8-855f-cebbc33a651e)
+![image](https://github.com/user-attachments/assets/e6e79e9a-adb3-46a4-bcab-416692412c3d)
 ![image](https://github.com/user-attachments/assets/5bc43730-4143-43e3-b952-6d6bb4e63047)
 
