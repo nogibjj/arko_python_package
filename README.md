@@ -1,7 +1,4 @@
-[![Install](https://github.com/nogibjj/arko_complex_query/actions/workflows/install.yml/badge.svg)](https://github.com/nogibjj/arko_complex_query/actions/workflows/install.yml)
-[![Format](https://github.com/nogibjj/arko_complex_query/actions/workflows/format.yml/badge.svg)](https://github.com/nogibjj/arko_complex_query/actions/workflows/format.yml)
-[![Lint](https://github.com/nogibjj/arko_complex_query/actions/workflows/lint.yml/badge.svg)](https://github.com/nogibjj/arko_complex_query/actions/workflows/lint.yml)
-[![Test](https://github.com/nogibjj/arko_complex_query/actions/workflows/test.yml/badge.svg)](https://github.com/nogibjj/arko_complex_query/actions/workflows/test.yml)
+[![CICD](https://github.com/nogibjj/arko_python_package/actions/workflows/CICD.yml/badge.svg)](https://github.com/nogibjj/arko_python_package/actions/workflows/CICD.yml)
 
 # Packaged CLI Tool to interact with DataBricks table 
 
