@@ -1,4 +1,4 @@
-name: Format Code
+name: CICD
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  format:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,8 +21,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}  # Specify your Python version
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: CICD
+        env:
+          DATABRICKS_KEY: ${{ secrets.DATABRICKS_KEY }}
+          SERVER_HOST_NAME: ${{ secrets.SERVER_HOST_NAME }}
+          SQL_HTTP: ${{ secrets.SQL_HTTP }}
 
-      - name: Format code
-        run: make format  # Adjust if needed
+        run: make all  # Adjust if needed
